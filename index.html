@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road to Cervino — 23 Luglio 2027</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono per dati tecnici/altitudini -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        glacier: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        alpine: {
+                            orange: '#ea580c',
+                            orangeLight: '#fff7ed',
+                            slate: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animazioni fluide per checkbox e barre */
+        .check-anim {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-bar-fill {
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        /* Nascondi scrollbar orizzontale sui filtri mobile mantenendo lo scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-glacier-200 selection:text-glacier-900">
+
+    <!-- Toast Notification (Messaggi al posto di alert()) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center gap-3 text-sm font-medium">
+            <span id="toast-icon" class="text-emerald-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </span>
+            <span id="toast-message">Azione completata!</span>
+        </div>
+    </div>
+
+    <!-- Top Navigation / Header Alpino -->
+    <header class="bg-gradient-to-br from-slate-900 via-glacier-900 to-slate-900 text-white shadow-lg border-b border-slate-800">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold tracking-wider uppercase text-glacier-200 mb-3">
+                        <svg class="w-4 h-4 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 20l6-11 4 7 3-5 4 9H4z" />
+                        </svg>
+                        <span>Tabella di Marcia Condivisa • Luca & Papà</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-3">
+                        Road to Cervino
+                    </h1>
+                    <p class="text-slate-300 mt-1 text-sm sm:text-base font-medium">
+                        Obiettivo: <span class="text-white font-semibold">Vetta (4.478 m)</span> — <span class="text-orange-400 font-semibold">23 Luglio 2027</span> (18° Compleanno)
+                    </p>
+                </div>
+
+                <!-- Azioni Rapide Header -->
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button onclick="openShareModal()" class="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-500 active:bg-orange-700 text-white font-semibold px-4 py-2.5 rounded-xl shadow-md transition text-sm cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                        <span>Condividi con Papà</span>
+                    </button>
+                    <button onclick="openAddModal()" class="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-medium px-3.5 py-2.5 rounded-xl border border-white/15 transition text-sm cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <span>Aggiungi Uscita</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Statistiche (4 Cards) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-6">
+                <!-- Countdown -->
+                <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-4">
+                    <div class="flex items-center justify-between text-slate-300 text-xs font-semibold uppercase tracking-wider">
+                        <span>Countdown Vetta</span>
+                        <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div class="mt-2 flex items-baseline gap-1.5">
+                        <span id="stat-days" class="text-2xl sm:text-3xl font-extrabold font-mono text-white">--</span>
+                        <span class="text-xs sm:text-sm text-slate-300 font-medium">giorni</span>
+                    </div>
+                    <div id="stat-weeks" class="text-xs text-glacier-200 mt-0.5 font-mono">-- settimane</div>
+                </div>
+
+                <!-- Avanzamento Globale -->
+                <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-4">
+                    <div class="flex items-center justify-between text-slate-300 text-xs font-semibold uppercase tracking-wider">
+                        <span>Avanzamento</span>
+                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <span id="stat-percent" class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-400">0%</span>
+                        <span id="stat-count" class="text-xs sm:text-sm text-slate-200 font-mono font-semibold">0/16</span>
+                    </div>
+                    <div class="w-full bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden">
+                        <div id="global-progress-bar" class="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Dislivello Accumulato -->
+                <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-4">
+                    <div class="flex items-center justify-between text-slate-300 text-xs font-semibold uppercase tracking-wider">
+                        <span>Dislivello D+</span>
+                        <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    </div>
+                    <div class="mt-2 flex items-baseline gap-1">
+                        <span id="stat-elevation" class="text-2xl sm:text-3xl font-extrabold font-mono text-white">0</span>
+                        <span class="text-xs sm:text-sm text-slate-300 font-medium">m D+</span>
+                    </div>
+                    <div id="stat-elevation-total" class="text-xs text-slate-300 mt-0.5 font-mono">su 14.550 m target</div>
+                </div>
+
+                <!-- Fase Attuale -->
+                <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-4">
+                    <div class="flex items-center justify-between text-slate-300 text-xs font-semibold uppercase tracking-wider">
+                        <span>Focus Attuale</span>
+                        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                    </div>
+                    <div id="stat-phase" class="mt-2 text-base sm:text-lg font-bold text-white leading-tight">
+                        Fase 1: Inverno
+                    </div>
+                    <div id="stat-phase-sub" class="text-xs text-glacier-200 mt-1 truncate">Motore aerobico & piedi</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+        <!-- Selettore Via Cervino & Logistica -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-orange-600">Strategia Vetta • Scelta Itinerario</span>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 mt-0.5">Versante scelto per il 23 Luglio 2027</h2>
+                </div>
+
+                <!-- Toggle Buttons -->
+                <div class="grid grid-cols-2 bg-slate-100 p-1 rounded-xl border border-slate-200 w-full md:w-auto">
+                    <button id="btn-route-leone" onclick="setRoute('leone')" class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition cursor-pointer">
+                        🇮🇹 Cresta del Leone
+                    </button>
+                    <button id="btn-route-hornli" onclick="setRoute('hornli')" class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition cursor-pointer">
+                        🇨🇭 Cresta dell'Hörnli
+                    </button>
+                </div>
+            </div>
+
+            <!-- Box Info Logistica Dinamico -->
+            <div id="route-info-box" class="mt-4 p-3.5 sm:p-4 rounded-xl bg-glacier-50 border border-glacier-200 text-sm text-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <!-- Popolato via JS -->
+            </div>
+        </section>
+
+        <!-- Barra Filtri & Ricerca -->
+        <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200">
+            <!-- Filtro Stato -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+                <button onclick="setStatusFilter('all')" data-status="all" class="status-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white transition cursor-pointer whitespace-nowrap">
+                    Tutti
+                </button>
+                <button onclick="setStatusFilter('todo')" data-status="todo" class="status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer whitespace-nowrap">
+                    Da fare
+                </button>
+                <button onclick="setStatusFilter('done')" data-status="done" class="status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer whitespace-nowrap">
+                    Completati
+                </button>
+            </div>
+
+            <!-- Filtro Categoria -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <span class="text-xs font-semibold text-slate-400 mr-1 hidden md:inline">Categoria:</span>
+                <button onclick="setCategoryFilter('all')" data-cat="all" class="cat-btn px-2.5 py-1.5 rounded-lg text-xs font-bold bg-glacier-100 text-glacier-900 transition cursor-pointer whitespace-nowrap">
+                    Tutte
+                </button>
+                <button onclick="setCategoryFilter('Skialp')" data-cat="Skialp" class="cat-btn px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer whitespace-nowrap">
+                    ⛷️ Skialp
+                </button>
+                <button onclick="setCategoryFilter('4000m')" data-cat="4000m" class="cat-btn px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer whitespace-nowrap">
+                    🏔️ 4000m / Vetta
+                </button>
+                <button onclick="setCategoryFilter('Tecnica')" data-cat="Tecnica" class="cat-btn px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer whitespace-nowrap">
+                    🧗 Tecnica / Creste
+                </button>
+                <button onclick="setCategoryFilter('Allenamento')" data-cat="Allenamento" class="cat-btn px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer whitespace-nowrap">
+                    ⚡ Forza & Gear
+                </button>
+            </div>
+        </section>
+
+        <!-- Contenitore Fasi Cronologiche -->
+        <div id="phases-container" class="space-y-6">
+            <!-- Le fasi e le schede vengono renderizzate qui dinamicamente -->
+        </div>
+
+        <!-- Footer con Reset / Info -->
+        <footer class="pt-6 pb-10 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div>
+                <p class="font-semibold text-slate-700">Road to Cervino • Villata ➔ Breuil-Cervinia / Zermatt</p>
+                <p class="mt-0.5">I dati vengono salvati automaticamente sul tuo dispositivo. Usa "Condividi con Papà" per sincronizzare.</p>
+            </div>
+            <button onclick="confirmResetModal()" class="text-slate-400 hover:text-red-600 underline transition cursor-pointer">
+                Ripristina elenco predefinito
+            </button>
+        </footer>
+    </main>
+
+    <!-- MODAL 1: Aggiungi Nuova Cima / Allenamento -->
+    <div id="add-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 animate-fade-in">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-900">Aggiungi Cima o Allenamento</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form id="add-item-form" onsubmit="handleAddItem(event)" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Titolo Cima / Uscita *</label>
+                    <input type="text" id="new-title" required placeholder="es. Punta Parrot (4.432 m) da Indren" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-glacier-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Fase</label>
+                        <select id="new-phase" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-glacier-500">
+                            <option value="fase1">Fase 1: Inverno</option>
+                            <option value="fase2">Fase 2: Primavera</option>
+                            <option value="fase3" selected>Fase 3: Inizio Estate</option>
+                            <option value="finale">Obiettivo Finale</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Dislivello (m D+)</label>
+                        <input type="number" id="new-elevation" min="0" step="50" value="1000" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-glacier-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Tipologia / Tag</label>
+                    <select id="new-category" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-glacier-500">
+                        <option value="4000m">4000m / Alta Quota</option>
+                        <option value="Skialp">Skialp</option>
+                        <option value="Tecnica">Tecnica / Cresta / Sfasciume</option>
+                        <option value="Allenamento">Allenamento / Gear</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Obiettivo Specifico / Descrizione</label>
+                    <textarea id="new-desc" rows="2" placeholder="es. Test passo in quota e discesa veloce in conserva..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-glacier-500"></textarea>
+                </div>
+                <div class="pt-2 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">Annulla</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-glacier-600 hover:bg-glacier-700 text-white shadow-sm cursor-pointer">Salva nella lista</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Condividi & Sincronizza con Papà -->
+    <div id="share-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Condividi con Papà</h3>
+                    <p class="text-xs text-slate-500">Invia il riepilogo su WhatsApp o sincronizza i progressi</p>
+                </div>
+                <button onclick="closeShareModal()" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Sezione 1: Riepilogo WhatsApp -->
+            <div class="mt-4">
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-700">1. Messaggio pronto per WhatsApp</label>
+                    <button onclick="copyWhatsAppText()" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xs transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        <span>Copia Testo</span>
+                    </button>
+                </div>
+                <textarea id="whatsapp-preview" readonly rows="8" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700 focus:outline-none"></textarea>
+            </div>
+
+            <!-- Sezione 2: Codice di Sincronizzazione -->
+            <div class="mt-5 pt-4 border-t border-slate-100">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">2. Sincronizzazione Dispositivi (Codice)</label>
+                <p class="text-xs text-slate-500 mb-2.5">Copia questo codice e incollalo sul telefono di tuo padre (o viceversa) per allineare spunte e note.</p>
+
+                <div class="flex gap-2">
+                    <input type="text" id="sync-code-box" readonly class="flex-1 px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono text-slate-600">
+                    <button onclick="copySyncCode()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition cursor-pointer whitespace-nowrap">
+                        Copia Codice
+                    </button>
+                </div>
+
+                <div class="mt-3 flex gap-2">
+                    <input type="text" id="import-code-input" placeholder="Incolla qui un codice ricevuto da papà..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-glacier-500">
+                    <button onclick="importSyncCode()" class="px-3.5 py-2 rounded-xl bg-glacier-600 hover:bg-glacier-700 text-white text-xs font-bold transition cursor-pointer whitespace-nowrap">
+                        Carica
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Conferma Reset -->
+    <div id="reset-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-900">Ripristinare i dati iniziali?</h3>
+            <p class="text-sm text-slate-600 mt-2">Tutte le spunte, le note personali e le uscite aggiunte manualmente verranno azzerate e riportate al piano originale.</p>
+            <div class="mt-5 flex justify-end gap-2">
+                <button onclick="closeResetModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">Annulla</button>
+                <button onclick="executeReset()" class="px-4 py-2 rounded-xl text-sm font-bold bg-red-600 hover:bg-red-700 text-white cursor-pointer">Sì, ripristina</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // DATI INIZIALI E CONFIGURAZIONE PIANO
+        // ==========================================
+        const STORAGE_KEY = 'road_to_cervino_2027_v1';
+
+        const PHASES_META = [
+            {
+                id: 'fase1',
+                badge: 'FASE 1 • NOV/DIC 2026 – MARZO 2027',
+                title: 'Inverno – Motore Aerobico, Quota e Piedi',
+                subtitle: 'Volume in Zona 2 con skialp, prevenzione crampi e sensibilizzazione con scarponi rigidi.',
+                color: 'sky'
+            },
+            {
+                id: 'fase2',
+                badge: 'FASE 2 • APRILE – MAGGIO 2027',
+                title: 'Primavera – Sfasciume, Conserva e Velocità',
+                subtitle: 'Superare il blocco sullo sfasciume della Grober: fluidità su roccia rotta e conserva protetta veloce.',
+                color: 'teal'
+            },
+            {
+                id: 'fase3',
+                badge: 'FASE 3 • GIUGNO – METÀ LUGLIO 2027',
+                title: 'Inizio Estate – Alta Quota, Misto e Prove Generali',
+                subtitle: 'Acclimatamento oltre i 4.000 m, ramponi su granito e test di tenuta su 1.700+ m D+.',
+                color: 'indigo'
+            },
+            {
+                id: 'finale',
+                badge: 'OBIETTIVO FINALE • 23 LUGLIO 2027',
+                title: 'Il Giorno della Vetta (18° Compleanno)',
+                subtitle: 'In cordata con papà fino alla croce di vetta del Cervino.',
+                color: 'orange'
+            }
+        ];
+
+        const DEFAULT_ITEMS = [
+            // FASE 1
+            {
+                id: 'f1-1',
+                phase: 'fase1',
+                title: 'Settaggio Attrezzatura: Scarponi Skialp (da 26.5 a 27.5)',
+                desc: 'Sostituzione scarponi troppo stretti per eliminare costrizione, migliorare spinta e prevenire crampi.',
+                typeLabel: 'Gear',
+                category: 'Allenamento',
+                elevation: 0,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f1-2',
+                phase: 'fase1',
+                title: 'Monte Zerbion (2.722 m) da Promiod',
+                desc: 'Uscita skialp in Zona 2 per costruire volume aerobico continuo senza andare fuori giri.',
+                typeLabel: 'Skialp',
+                category: 'Skialp',
+                elevation: 1200,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f1-3',
+                phase: 'fase1',
+                title: 'Corno Bianco (3.320 m) o salita alta in Val Vogna / Alagna',
+                desc: 'Test di resistenza skialp oltre i 3.000 m con gestione freddo e cambio assetto.',
+                typeLabel: 'Skialp',
+                category: 'Skialp',
+                elevation: 1500,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f1-4',
+                phase: 'fase1',
+                title: 'Gressoney / Champoluc (Salita al Colle Bettaforca o Rothorn)',
+                desc: 'Ritmo continuo e costante in salita lunga su dislivello importante.',
+                typeLabel: 'Skialp',
+                category: 'Skialp',
+                elevation: 1350,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f1-5',
+                phase: 'fase1',
+                title: 'Ciclo Forza Eccentrica & Anti-Crampi (8 settimane)',
+                desc: 'Squat bulgari, affondi, calf raises + protocollo sali/maltodestrine (lezione post-Antey).',
+                typeLabel: 'Allenamento',
+                category: 'Allenamento',
+                elevation: 0,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f1-6',
+                phase: 'fase1',
+                title: 'Arrampicata con Scarponi Rigidi (Indoor / Muretto)',
+                desc: '4 sessioni su gradi 4c/5b per abituare i piedi a spingere su micro-tacche senza scarpette.',
+                typeLabel: 'Tecnica',
+                category: 'Tecnica',
+                elevation: 0,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+
+            // FASE 2
+            {
+                id: 'f2-1',
+                phase: 'fase2',
+                title: 'Creste Bassa VdA / Canavese (Monte Gregorio o Cresta della Biula)',
+                desc: 'Movimento fluido su roccia rotta e sfasciumi per prendere sicurezza su terreno instabile.',
+                typeLabel: 'Cresta / Sfasciume',
+                category: 'Tecnica',
+                elevation: 950,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f2-2',
+                phase: 'fase2',
+                title: 'Traversata Donnas – Arnad / Creste attrezzate',
+                desc: 'Allenamento conserva protetta e corta veloce con papà senza perdere tempo in soste lunghe.',
+                typeLabel: 'Tecnica / Conserva',
+                category: 'Tecnica',
+                elevation: 800,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f2-3',
+                phase: 'fase2',
+                title: 'Falesia / Multipitch con Scarponi e Ramponi (Montestrutto / Albard)',
+                desc: 'Tiri fino al 5b con scarponi da alta montagna + test punte ramponi su granito/gneiss.',
+                typeLabel: 'Dry / Misto',
+                category: 'Tecnica',
+                elevation: 400,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f2-4',
+                phase: 'fase2',
+                title: 'Ripasso Manovre Discesa & Doppie Articolate',
+                desc: 'Gestione corde su terreno rotto per evitare incastri nel recupero e disarrampicata rapida.',
+                typeLabel: 'Sicurezza / Manovre',
+                category: 'Tecnica',
+                elevation: 0,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+
+            // FASE 3
+            {
+                id: 'f3-1',
+                phase: 'fase3',
+                title: 'Punta Giordani (4.046 m) per la Cresta del Soldato',
+                desc: 'Acclimatamento a 4.000 m da Indren, terreno misto roccia/neve e ramponi su granito.',
+                typeLabel: '4000m / Misto',
+                category: '4000m',
+                elevation: 800,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f3-2',
+                phase: 'fase3',
+                title: 'Polluce (4.092 m) o Castore (4.228 m)',
+                desc: 'Passo in quota sul Monte Rosa e passaggi attrezzati con catene simili alle corde fisse del Cervino.',
+                typeLabel: '4000m / Cresta',
+                category: '4000m',
+                elevation: 1050,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f3-3',
+                phase: 'fase3',
+                title: 'Dente del Gigante (4.013 m - Monte Bianco)',
+                desc: 'Arrampicata fisica in alta quota con canaponi e calate in doppia molto esposte.',
+                typeLabel: '4000m / Roccia',
+                category: '4000m',
+                elevation: 750,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f3-4',
+                phase: 'fase3',
+                title: 'Gran Cresta di Prova (Kuffner al Mont Maudit / Lyskamm / Cresta Rey)',
+                desc: 'Test definitivo di esposizione, ritmo in conserva e tenuta mentale su grande itinerario.',
+                typeLabel: 'Test Definitivo',
+                category: '4000m',
+                elevation: 1300,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+            {
+                id: 'f3-5',
+                phase: 'fase3',
+                title: 'Test Lungo Dislivello & Nutrizione (1.700+ m D+ sopra i 3.000 m)',
+                desc: 'Salita continua tipo Rif. Quintino Sella / Capanna Margherita da fondovalle senza crampi.',
+                typeLabel: 'Endurance Test',
+                category: '4000m',
+                elevation: 1750,
+                completed: false,
+                note: '',
+                completedDate: ''
+            },
+
+            // FINALE
+            {
+                id: 'fin-1',
+                phase: 'finale',
+                title: 'CERVINO (4.478 m) — Vetta con Papà!',
+                desc: 'Salita finale il 23 Luglio 2027 per il 18° compleanno. Testa fredda, passo regolare e sicurezza in discesa.',
+                typeLabel: 'Vetta Finale',
+                category: '4000m',
+                elevation: 1700,
+                completed: false,
+                note: '',
+                completedDate: ''
+            }
+        ];
+
+        // Stato Applicazione
+        let appState = {
+            selectedRoute: 'leone', // 'leone' | 'hornli'
+            items: []
+        };
+
+        let activeStatusFilter = 'all';
+        let activeCategoryFilter = 'all';
+        let openNoteEditors = new Set();
+
+        // ==========================================
+        // INIZIALIZZAZIONE & PERSISTENZA
+        // ==========================================
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && Array.isArray(parsed.items)) {
+                        appState = parsed;
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error('Errore lettura localStorage:', e);
+            }
+            // Fallback ai dati di default
+            appState = {
+                selectedRoute: 'leone',
+                items: JSON.parse(JSON.stringify(DEFAULT_ITEMS))
+            };
+            saveState();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                console.error('Errore salvataggio localStorage:', e);
+            }
+        }
+
+        // ==========================================
+        // CALCOLO COUNTDOWN & STATISTICHE
+        // ==========================================
+        function updateDashboard() {
+            // 1. Countdown fino al 23 Luglio 2027
+            const targetDate = new Date('2027-07-23T06:00:00');
+            const now = new Date();
+            const diffMs = targetDate - now;
+            const daysLeft = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+            const weeksLeft = Math.max(0, Math.floor(daysLeft / 7));
+
+            document.getElementById('stat-days').textContent = daysLeft;
+            document.getElementById('stat-weeks').textContent = `${weeksLeft} settimane rimanenti`;
+
+            // 2. Avanzamento & Dislivello
+            const totalItems = appState.items.length;
+            const completedItems = appState.items.filter(i => i.completed);
+            const completedCount = completedItems.length;
+            const percent = totalItems > 0 ? Math.round((completedCount / totalItems) * 100) : 0;
+
+            const completedElevation = completedItems.reduce((sum, item) => sum + (Number(item.elevation) || 0), 0);
+            const totalElevation = appState.items.reduce((sum, item) => sum + (Number(item.elevation) || 0), 0);
+
+            document.getElementById('stat-percent').textContent = `${percent}%`;
+            document.getElementById('stat-count').textContent = `${completedCount}/${totalItems}`;
+            document.getElementById('global-progress-bar').style.width = `${percent}%`;
+
+            document.getElementById('stat-elevation').textContent = completedElevation.toLocaleString('it-IT');
+            document.getElementById('stat-elevation-total').textContent = `su ${totalElevation.toLocaleString('it-IT')} m D+ totali`;
+
+            // 3. Fase Attuale (prima fase non completata al 100%)
+            let currentPhaseMeta = PHASES_META[PHASES_META.length - 1];
+            for (const p of PHASES_META) {
+                const phaseItems = appState.items.filter(i => i.phase === p.id);
+                if (phaseItems.some(i => !i.completed)) {
+                    currentPhaseMeta = p;
+                    break;
+                }
+            }
+            const shortTitle = currentPhaseMeta.title.split('–')[0].trim();
+            document.getElementById('stat-phase').textContent = shortTitle;
+            document.getElementById('stat-phase-sub').textContent = currentPhaseMeta.badge.split('•')[1]?.trim() || 'Obiettivo Vetta';
+        }
+
+        // ==========================================
+        // SELETTORE VIA CERVINO (LEONE vs HORNLI)
+        // ==========================================
+        function setRoute(route) {
+            appState.selectedRoute = route;
+            saveState();
+            renderRouteSelector();
+            showToast(route === 'leone' ? 'Selezionata Cresta del Leone (Italia)' : 'Selezionata Cresta dell\'Hörnli (Svizzera)');
+        }
+
+        function renderRouteSelector() {
+            const btnLeone = document.getElementById('btn-route-leone');
+            const btnHornli = document.getElementById('btn-route-hornli');
+            const infoBox = document.getElementById('route-info-box');
+
+            if (appState.selectedRoute === 'leone') {
+                btnLeone.className = 'px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-white text-glacier-900 shadow-xs border border-slate-200 transition cursor-pointer';
+                btnHornli.className = 'px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 transition cursor-pointer';
+
+                infoBox.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="font-bold text-glacier-900 flex items-center gap-2">
+                            <span>🇮🇹 Cresta del Leone (Versante Italiano — Breuil-Cervinia)</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-glacier-200 text-glacier-900 font-mono">AD+ / III-IV</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600">
+                            Via più verticale, tecnica ed estetica (Placca Seiler, Gran Corda, Pic Tyndall, Scala Jordan). Richiede ottimo ritmo sulle corde fisse e doppie pulite.
+                        </p>
+                    </div>
+                    <div class="shrink-0 bg-white px-3 py-2 rounded-lg border border-glacier-200 text-xs">
+                        <span class="block font-bold text-orange-600 uppercase">Logistica Chiave:</span>
+                        <span class="text-slate-700 font-medium">Capanna Carrel (3.830 m) — Prenotare appena apre!</span>
+                    </div>
+                `;
+            } else {
+                btnHornli.className = 'px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-white text-glacier-900 shadow-xs border border-slate-200 transition cursor-pointer';
+                btnLeone.className = 'px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 transition cursor-pointer';
+
+                infoBox.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="font-bold text-glacier-900 flex items-center gap-2">
+                            <span>🇨🇭 Cresta dell'Hörnli (Versante Svizzero — Zermatt)</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-glacier-200 text-glacier-900 font-mono">AD / III continuo</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600">
+                            Cresta infinita di III grado e sfasciumi (1.220 m D+ dal rifugio). Fondamentale orientamento al buio all'alba e velocità in conserva corta.
+                        </p>
+                    </div>
+                    <div class="shrink-0 bg-white px-3 py-2 rounded-lg border border-glacier-200 text-xs">
+                        <span class="block font-bold text-orange-600 uppercase">Logistica Chiave:</span>
+                        <span class="text-slate-700 font-medium">Hörnlihütte (3.260 m) — Prenotazione obbligatoria</span>
+                    </div>
+                `;
+            }
+        }
+
+        // ==========================================
+        // FILTRI
+        // ==========================================
+        function setStatusFilter(status) {
+            activeStatusFilter = status;
+            document.querySelectorAll('.status-btn').forEach(btn => {
+                if (btn.dataset.status === status) {
+                    btn.className = 'status-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white transition cursor-pointer whitespace-nowrap';
+                } else {
+                    btn.className = 'status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer whitespace-nowrap';
+                }
+            });
+            renderPhases();
+        }
+
+        function setCategoryFilter(cat) {
+            activeCategoryFilter = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = 'cat-btn px-2.5 py-1.5 rounded-lg text-xs font-bold bg-glacier-100 text-glacier-900 transition cursor-pointer whitespace-nowrap';
+                } else {
+                    btn.className = 'cat-btn px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer whitespace-nowrap';
+                }
+            });
+            renderPhases();
+        }
+
+        // ==========================================
+        // RENDERING FASI E CHECKLIST
+        // ==========================================
+        function getBadgeStyle(category, isFinale) {
+            if (isFinale) return 'bg-orange-100 text-orange-800 border-orange-200';
+            switch (category) {
+                case 'Skialp': return 'bg-sky-100 text-sky-800 border-sky-200';
+                case '4000m': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+                case 'Tecnica': return 'bg-teal-100 text-teal-800 border-teal-200';
+                default: return 'bg-amber-100 text-amber-800 border-amber-200';
+            }
+        }
+
+        function renderPhases() {
+            const container = document.getElementById('phases-container');
+            container.innerHTML = '';
+
+            PHASES_META.forEach(phase => {
+                const allPhaseItems = appState.items.filter(i => i.phase === phase.id);
+
+                // Calcola progresso fase (sempre sul totale reale della fase)
+                const doneInPhase = allPhaseItems.filter(i => i.completed).length;
+                const totalInPhase = allPhaseItems.length;
+                const phasePercent = totalInPhase > 0 ? Math.round((doneInPhase / totalInPhase) * 100) : 0;
+
+                // Applica filtri di visualizzazione
+                const filteredItems = allPhaseItems.filter(item => {
+                    const matchStatus = activeStatusFilter === 'all' ||
+                        (activeStatusFilter === 'done' && item.completed) ||
+                        (activeStatusFilter === 'todo' && !item.completed);
+                    const matchCat = activeCategoryFilter === 'all' || item.category === activeCategoryFilter;
+                    return matchStatus && matchCat;
+                });
+
+                // Se ci sono filtri attivi e la fase è vuota, nascondila
+                if (filteredItems.length === 0 && (activeStatusFilter !== 'all' || activeCategoryFilter !== 'all')) {
+                    return;
+                }
+
+                const isFinale = phase.id === 'finale';
+                const cardBorder = isFinale ? 'border-orange-300 ring-1 ring-orange-200' : 'border-slate-200';
+                const headerBg = isFinale ? 'bg-gradient-to-r from-orange-50 to-amber-50' : 'bg-slate-50/80';
+
+                const sectionEl = document.createElement('section');
+                sectionEl.className = `bg-white rounded-2xl shadow-sm border ${cardBorder} overflow-hidden`;
+
+                let itemsHtml = '';
+                filteredItems.forEach(item => {
+                    const isEditingNote = openNoteEditors.has(item.id);
+                    const hasNoteOrDate = (item.note && item.note.trim() !== '') || (item.completedDate && item.completedDate.trim() !== '');
+                    const badgeClass = getBadgeStyle(item.category, isFinale);
+
+                    itemsHtml += `
+                        <div class="p-4 sm:p-5 transition-colors ${item.completed ? 'bg-slate-50/70' : 'hover:bg-slate-50/40'}">
+                            <div class="flex items-start gap-3.5">
+                                <!-- Checkbox Custom Grande per Touch -->
+                                <button onclick="toggleItem('${item.id}')" aria-label="Segna come completato"
+                                    class="mt-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-lg border-2 flex items-center justify-center shrink-0 check-anim cursor-pointer
+                                    ${item.completed
+                                        ? (isFinale ? 'bg-orange-600 border-orange-600 text-white' : 'bg-emerald-600 border-emerald-600 text-white')
+                                        : 'border-slate-300 bg-white hover:border-glacier-500'}">
+                                    ${item.completed ? '<svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' : ''}
+                                </button>
+
+                                <!-- Contenuto Voce -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-wrap items-center justify-between gap-2">
+                                        <h4 onclick="toggleItem('${item.id}')" class="text-sm sm:text-base font-bold cursor-pointer select-none leading-snug ${item.completed ? 'line-through text-slate-400' : 'text-slate-900'}">
+                                            ${escapeHtml(item.title)}
+                                        </h4>
+
+                                        <!-- Pillole Tecniche -->
+                                        <div class="flex items-center gap-1.5 shrink-0">
+                                            <span class="px-2 py-0.5 rounded-md text-[11px] font-bold border ${badgeClass}">
+                                                ${escapeHtml(item.typeLabel)}
+                                            </span>
+                                            ${item.elevation > 0 ? `
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                                    +${item.elevation} m D+
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+
+                                    <p class="text-xs sm:text-sm mt-1 leading-relaxed ${item.completed ? 'text-slate-400' : 'text-slate-600'}">
+                                        ${escapeHtml(item.desc)}
+                                    </p>
+
+                                    <!-- Riepilogo Nota / Data salvata -->
+                                    ${hasNoteOrDate && !isEditingNote ? `
+                                        <div onclick="toggleNoteEditor('${item.id}')" class="mt-2.5 inline-flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-lg bg-glacier-50/80 border border-glacier-200/80 text-xs text-glacier-900 cursor-pointer hover:bg-glacier-100/70 transition">
+                                            ${item.completedDate ? `<span class="font-mono font-bold text-emerald-700">📅 ${escapeHtml(item.completedDate)}</span>` : ''}
+                                            ${item.note ? `<span class="font-medium">📝 "${escapeHtml(item.note)}"</span>` : ''}
+                                        </div>
+                                    ` : ''}
+
+                                    <!-- Barra Azioni Voce (Nota / Elimina se custom) -->
+                                    <div class="mt-2.5 flex items-center gap-3">
+                                        <button onclick="toggleNoteEditor('${item.id}')" class="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-glacier-700 transition cursor-pointer">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <span>${isEditingNote ? 'Chiudi note' : (hasNoteOrDate ? 'Modifica data/nota' : 'Aggiungi data o nota')}</span>
+                                        </button>
+
+                                        ${item.isCustom ? `
+                                            <button onclick="deleteCustomItem('${item.id}')" class="text-xs font-medium text-slate-400 hover:text-red-600 transition cursor-pointer">
+                                                Elimina
+                                            </button>
+                                        ` : ''}
+                                    </div>
+
+                                    <!-- Editor Inline Data e Note -->
+                                    ${isEditingNote ? `
+                                        <div class="mt-3 p-3 rounded-xl bg-slate-100 border border-slate-200 space-y-2.5">
+                                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                <div>
+                                                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Data Uscita</label>
+                                                    <input type="text" id="date-input-${item.id}" value="${escapeHtml(item.completedDate || '')}" placeholder="es. 14/02/2027" class="w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-glacier-500">
+                                                </div>
+                                                <div class="sm:col-span-2">
+                                                    <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Diario / Sensazioni / Condizioni</label>
+                                                    <input type="text" id="note-input-${item.id}" value="${escapeHtml(item.note || '')}" placeholder="es. Vento forte in cresta, zero crampi, ottimo passo!" class="w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-glacier-500">
+                                                </div>
+                                            </div>
+                                            <div class="flex justify-end gap-2">
+                                                <button onclick="saveItemNote('${item.id}')" class="px-3 py-1.5 rounded-lg bg-glacier-600 hover:bg-glacier-700 text-white text-xs font-bold cursor-pointer">
+                                                    Salva Nota
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                sectionEl.innerHTML = `
+                    <!-- Header Fase -->
+                    <div class="${headerBg} px-4 sm:px-6 py-4 border-b border-slate-200/80">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                                <span class="text-[11px] font-extrabold uppercase tracking-wider ${isFinale ? 'text-orange-600' : 'text-glacier-700'}">
+                                    ${phase.badge}
+                                </span>
+                                <h3 class="text-base sm:text-lg font-extrabold text-slate-900 mt-0.5">
+                                    ${phase.title}
+                                </h3>
+                                <p class="text-xs text-slate-600 mt-0.5">${phase.subtitle}</p>
+                            </div>
+                            <div class="flex items-center gap-3 self-start sm:self-center bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs shrink-0">
+                                <span class="text-xs font-mono font-bold text-slate-700">${doneInPhase}/${totalInPhase}</span>
+                                <div class="w-16 bg-slate-200 h-2 rounded-full overflow-hidden">
+                                    <div class="${isFinale ? 'bg-orange-500' : 'bg-emerald-500'} h-full rounded-full progress-bar-fill" style="width: ${phasePercent}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista Elementi -->
+                    <div class="divide-y divide-slate-100">
+                        ${itemsHtml}
+                    </div>
+                `;
+
+                container.appendChild(sectionEl);
+            });
+        }
+
+        // ==========================================
+        // INTERAZIONI UTENTE (CHECK, NOTE, AGGIUNTA)
+        // ==========================================
+        function toggleItem(id) {
+            const item = appState.items.find(i => i.id === id);
+            if (!item) return;
+
+            item.completed = !item.completed;
+
+            // Se completato ora e non ha data, imposta automaticamente la data odierna
+            if (item.completed && !item.completedDate) {
+                const today = new Date();
+                const dd = String(today.getDate()).padStart(2, '0');
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const yyyy = today.getFullYear();
+                item.completedDate = `${dd}/${mm}/${yyyy}`;
+            }
+
+            saveState();
+            updateDashboard();
+            renderPhases();
+
+            if (item.completed) {
+                if (item.id === 'fin-1') {
+                    showToast('🏔️ VETTA DEL CERVINO RAGGIUNTA! Buon 18° compleanno!');
+                } else {
+                    showToast('Obiettivo spuntato! Ottimo lavoro.');
+                }
+            }
+        }
+
+        function toggleNoteEditor(id) {
+            if (openNoteEditors.has(id)) {
+                openNoteEditors.delete(id);
+            } else {
+                openNoteEditors.add(id);
+            }
+            renderPhases();
+        }
+
+        function saveItemNote(id) {
+            const item = appState.items.find(i => i.id === id);
+            if (!item) return;
+
+            const dateVal = document.getElementById(`date-input-${id}`)?.value || '';
+            const noteVal = document.getElementById(`note-input-${id}`)?.value || '';
+
+            item.completedDate = dateVal.trim();
+            item.note = noteVal.trim();
+            openNoteEditors.delete(id);
+
+            saveState();
+            renderPhases();
+            showToast('Nota e data salvate!');
+        }
+
+        function deleteCustomItem(id) {
+            appState.items = appState.items.filter(i => i.id !== id);
+            saveState();
+            updateDashboard();
+            renderPhases();
+            showToast('Uscita rimossa.');
+        }
+
+        // ==========================================
+        // MODALE AGGIUNGI USCITA
+        // ==========================================
+        function openAddModal() {
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+            document.getElementById('add-item-form').reset();
+        }
+
+        function handleAddItem(e) {
+            e.preventDefault();
+            const title = document.getElementById('new-title').value.trim();
+            const phase = document.getElementById('new-phase').value;
+            const elevation = parseInt(document.getElementById('new-elevation').value, 10) || 0;
+            const category = document.getElementById('new-category').value;
+            const desc = document.getElementById('new-desc').value.trim() || 'Uscita aggiuntiva inserita nel piano di preparazione.';
+
+            if (!title) return;
+
+            const newItem = {
+                id: 'custom-' + Date.now(),
+                phase,
+                title,
+                desc,
+                typeLabel: category,
+                category,
+                elevation,
+                completed: false,
+                note: '',
+                completedDate: '',
+                isCustom: true
+            };
+
+            appState.items.push(newItem);
+            saveState();
+            updateDashboard();
+            renderPhases();
+            closeAddModal();
+            showToast('Nuova cima/uscita aggiunta!');
+        }
+
+        // ==========================================
+        // MODALE CONDIVISIONE WHATSAPP & SYNC PAPÀ
+        // ==========================================
+        function openShareModal() {
+            generateWhatsAppSummary();
+            generateSyncCode();
+            document.getElementById('share-modal').classList.remove('hidden');
+        }
+
+        function closeShareModal() {
+            document.getElementById('share-modal').classList.add('hidden');
+        }
+
+        function generateWhatsAppSummary() {
+            const total = appState.items.length;
+            const done = appState.items.filter(i => i.completed).length;
+            const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+            const elev = appState.items.filter(i => i.completed).reduce((s, i) => s + (Number(i.elevation) || 0), 0);
+            const routeName = appState.selectedRoute === 'leone' ? 'Cresta del Leone (Italia)' : 'Cresta dell\'Hörnli (Svizzera)';
+
+            let text = `🏔️ *ROAD TO CERVINO — 23 Luglio 2027*\n`;
+            text += `📍 Itinerario scelto: *${routeName}*\n`;
+            text += `📊 Avanzamento: *${done}/${total} (${percent}%)* | Dislivello: *+${elev.toLocaleString('it-IT')} m D+*\n\n`;
+
+            PHASES_META.forEach(p => {
+                const pItems = appState.items.filter(i => i.phase === p.id);
+                if (pItems.length === 0) return;
+                text += `*${p.title.toUpperCase()}*\n`;
+                pItems.forEach(item => {
+                    const check = item.completed ? '✅' : '⬜';
+                    const dateStr = item.completedDate ? ` (${item.completedDate})` : '';
+                    const noteStr = item.note ? ` — _"${item.note}"_` : '';
+                    text += `${check} ${item.title}${dateStr}${noteStr}\n`;
+                });
+                text += `\n`;
+            });
+
+            document.getElementById('whatsapp-preview').value = text.trim();
+        }
+
+        function generateSyncCode() {
+            // Crea un payload compatto con lo stato delle spunte, note e uscite custom
+            const payload = {
+                r: appState.selectedRoute,
+                d: appState.items.map(i => ({
+                    id: i.id,
+                    c: i.completed ? 1 : 0,
+                    dt: i.completedDate || '',
+                    n: i.note || '',
+                    ...(i.isCustom ? {
+                        isCustom: true,
+                        phase: i.phase,
+                        title: i.title,
+                        desc: i.desc,
+                        typeLabel: i.typeLabel,
+                        category: i.category,
+                        elevation: i.elevation
+                    } : {})
+                }))
+            };
+            const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
+            document.getElementById('sync-code-box').value = encoded;
+        }
+
+        function copyTextFallback(elementId, successMsg) {
+            const el = document.getElementById(elementId);
+            el.select();
+            el.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                showToast(successMsg);
+            } catch (err) {
+                showToast('Impossibile copiare automaticamente, seleziona e copia il testo.');
+            }
+        }
+
+        function copyWhatsAppText() {
+            copyTextFallback('whatsapp-preview', 'Riepilogo copiato! Incollalo su WhatsApp a papà.');
+        }
+
+        function copySyncCode() {
+            copyTextFallback('sync-code-box', 'Codice di sincronizzazione copiato!');
+        }
+
+        function importSyncCode() {
+            const rawCode = document.getElementById('import-code-input').value.trim();
+            if (!rawCode) {
+                showToast('Incolla prima un codice valido.');
+                return;
+            }
+
+            try {
+                const decoded = JSON.parse(decodeURIComponent(atob(rawCode)));
+                if (!decoded || !Array.isArray(decoded.d)) {
+                    throw new Error('Formato non valido');
+                }
+
+                if (decoded.r) {
+                    appState.selectedRoute = decoded.r;
+                }
+
+                // Ricostruisci lista unendo i default con lo stato importato
+                const baseItems = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+                const importedMap = new Map(decoded.d.map(x => [x.id, x]));
+
+                baseItems.forEach(item => {
+                    const saved = importedMap.get(item.id);
+                    if (saved) {
+                        item.completed = saved.c === 1;
+                        item.completedDate = saved.dt || '';
+                        item.note = saved.n || '';
+                    }
+                });
+
+                // Aggiungi eventuali custom items presenti nel codice
+                decoded.d.forEach(saved => {
+                    if (saved.isCustom) {
+                        baseItems.push({
+                            id: saved.id,
+                            phase: saved.phase,
+                            title: saved.title,
+                            desc: saved.desc,
+                            typeLabel: saved.typeLabel,
+                            category: saved.category,
+                            elevation: saved.elevation,
+                            completed: saved.c === 1,
+                            completedDate: saved.dt || '',
+                            note: saved.n || '',
+                            isCustom: true
+                        });
+                    }
+                });
+
+                appState.items = baseItems;
+                saveState();
+                renderRouteSelector();
+                updateDashboard();
+                renderPhases();
+                document.getElementById('import-code-input').value = '';
+                closeShareModal();
+                showToast('Progressi sincronizzati con successo!');
+            } catch (e) {
+                showToast('Codice non valido o incompleto. Controlla di averlo copiato tutto.');
+            }
+        }
+
+        // ==========================================
+        // RESET DATI & UTILITY
+        // ==========================================
+        function confirmResetModal() {
+            document.getElementById('reset-modal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.add('hidden');
+        }
+
+        function executeReset() {
+            appState = {
+                selectedRoute: 'leone',
+                items: JSON.parse(JSON.stringify(DEFAULT_ITEMS))
+            };
+            saveState();
+            renderRouteSelector();
+            updateDashboard();
+            renderPhases();
+            closeResetModal();
+            showToast('Tabella di marcia ripristinata.');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        let toastTimer = null;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = msg;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        // Avvio applicazione
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderRouteSelector();
+            updateDashboard();
+            renderPhases();
+        });
+    </script>
+</body>
+</html>
